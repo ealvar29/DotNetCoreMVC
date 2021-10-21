@@ -5,18 +5,19 @@ using System.Collections.Generic;
 
 namespace MVCDotNet5.Controllers
 {
-    public class CategoryController : Controller
+    public class ApplicationTypeController : Controller
     {
         private readonly ApplicationDbContext _db;
-        public CategoryController(ApplicationDbContext db)
+        public ApplicationTypeController(ApplicationDbContext db)
         {
             _db = db;
         }
         public IActionResult Index()
         {
-            IEnumerable<Category> categories = _db.Categories;
-            return View(categories);
+            IEnumerable<ApplicationType> appType = _db.ApplicationTypes;
+            return View(appType);
         }
+
         //GET -- CREATE
         public IActionResult Create()
         {
@@ -26,15 +27,11 @@ namespace MVCDotNet5.Controllers
         //POST -- CREATE
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Category category)
+        public IActionResult Create(ApplicationType appType)
         {
-            if (ModelState.IsValid)
-            {
-                _db.Categories.Add(category);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(category);
+            _db.ApplicationTypes.Add(appType);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }

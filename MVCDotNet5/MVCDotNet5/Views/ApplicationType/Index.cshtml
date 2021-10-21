@@ -1,0 +1,41 @@
+﻿@model IEnumerable<MVCDotNet5.Models.ApplicationType>
+
+<div class="container p-3">
+	<div class="row pt-4">
+		<div class="col-6">
+			<h2 class="text-primary">Application Type List</h2>
+		</div>
+		<div class="col-6 text-right">
+			<a asp-controller="ApplicationType" asp-action="Create" class="btn btn-primary">Add New Application Type</a>
+		</div>
+	</div>
+	<br /> <br />
+	@if(Model.Count() > 0)
+	{
+		<table class="table table-bordered table-striped" style="width: 100%">
+			<thead>
+				<tr>
+					<th>
+						Application Type Id
+					</th>
+					<th>
+						Application Type Name
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var app in Model)
+				{
+					<tr>
+						<td width="50%">@app.Id</td>
+						<td width="50%">@app.Name</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	} else
+	{
+		<p>No Application Type to show</p>
+	}
+</div>
+
