@@ -36,7 +36,7 @@ namespace MVCDotNet5.Controllers
             }
             return View(category);
         }
-        //GET -- CREATE
+        //GET -- EDIT
         public IActionResult Edit(int? id)
         {
             if (id == null || id == 0)
@@ -50,7 +50,7 @@ namespace MVCDotNet5.Controllers
             }
             return View(obj);
         }
-        //POST -- Edit
+        //POST -- EDIT
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Category category)
@@ -62,6 +62,36 @@ namespace MVCDotNet5.Controllers
                 return RedirectToAction("Index");
             }
             return View(category);
+        }
+
+        //GET -- DELETE
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            var obj = _db.Categories.Find(id);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            return View(obj);
+        }
+
+        //POST -- DELETE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeletePost(int? id)
+        {
+            var obj = _db.Categories.Find(id);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            _db.Categories.Remove(obj);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }
