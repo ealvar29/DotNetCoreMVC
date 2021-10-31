@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using MVCDotNet5.Data;
 using MVCDotNet5.Models;
 using MVCDotNet5.Models.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace MVCDotNet5.Controllers
@@ -11,30 +15,20 @@ namespace MVCDotNet5.Controllers
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _db;
-        public ProductController(ApplicationDbContext db)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public ProductController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {
             _db = db;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
-            IEnumerable<Product> products = _db.Products;
-            foreach(var obj in products)
-            {
-                obj.Category = _db.Categories.FirstOrDefault(x => x.Id == obj.CategoryId);
-            }
+            IEnumerable<Product> products = _db.Products.Include(x => x.Category);
             return View(products);
         }
         //GET -- UPSERT
         public IActionResult Upsert(int? id)
         {
-            //IEnumerable<SelectListItem> CategoryDropDown = _db.Categories.Select(x => new SelectListItem
-            //{
-            //    Text = x.Name,
-            //    Value = x.Id.ToString()
-            //});
-
-            //ViewBag.CategoryDropDown = CategoryDropDown;    
-            //Product product = new Product();
             ProductViewModel productViewModel = new ProductViewModel()
             {
                 Product = new Product(),
@@ -59,48 +53,38 @@ namespace MVCDotNet5.Controllers
             }
         }
 
-        //POST -- CREATE
+        // POST - UPSERT
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Upsert(Product product)
+        public IActionResult Upsert(ProductViewModel productViewModel)
         {
             if (ModelState.IsValid)
             {
-                _db.Products.Add(product);
+                var files = HttpContext.Request.Form.Files;
+                string webRootPath = _webHostEnvironment.WebRootPath;
+
+                if (productViewModel.Product.Id == 0)
+                {
+                    //Creating
+                    string upload = webRootPath + WC.ImagePath;
+                    string fileName = Guid.NewGuid().ToString();
+                    string extension = Path.GetExtension(files[0].FileName);
+                    using (var fileStream = new FileStream(Path.Combine(upload, fileName + extension), FileMode.Create))
+                    {
+                        files[0].CopyTo(fileStream);
+                    }
+                    productViewModel.Product.Image = fileName + extension;
+                    _db.Products.Add(productViewModel.Product);
+                }
+                else
+                {
+                    //Updating  
+                }
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(product);
-        }
-
-        //GET -- DELETE
-        public IActionResult Delete(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-            var obj = _db.Products.Find(id);
-            if (obj == null)
-            {
-                return NotFound();
-            }
-            return View(obj);
-        }
-
-        //POST -- DELETE
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeletePost(int? id)
-        {
-            var obj = _db.Products.Find(id);
-            if (obj == null)
-            {
-                return NotFound();
-            }
-            _db.Products.Remove(obj);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
+            return View();
+           
         }
     }
 }

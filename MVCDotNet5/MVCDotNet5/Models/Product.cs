@@ -15,6 +15,7 @@ namespace MVCDotNet5.Models
         public double Price { get; set; }
 
         public string Image { get; set; }
+
         [Display(Name = "Category Type")]
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
