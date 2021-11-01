@@ -37,11 +37,11 @@ namespace MVCDotNet5.Controllers
                     Text = x.Name,
                     Value = x.Id.ToString()
                 })
-             };
+            };
             if (id == null)
             {
                 return View(productViewModel);
-            } 
+            }
             else
             {
                 productViewModel.Product = _db.Products.Find(id);
@@ -79,12 +79,91 @@ namespace MVCDotNet5.Controllers
                 else
                 {
                     //Updating  
+
+                    var productFromDb = _db.Products.AsNoTracking().FirstOrDefault(x => x.Id == productViewModel.Product.Id);
+
+                    if (files.Count > 0)
+                    {
+                        string upload = webRootPath + WC.ImagePath;
+                        string fileName = Guid.NewGuid().ToString();
+                        string extension = Path.GetExtension(files[0].FileName);
+
+                        //Editing or Removing Old Image
+                        var oldProductImage = Path.Combine(upload, productFromDb.Image);
+
+                        if (System.IO.File.Exists(oldProductImage))
+                        {
+                            System.IO.File.Delete(oldProductImage);
+                        }
+
+                        using (var fileStream = new FileStream(Path.Combine(upload, fileName + extension), FileMode.Create))
+                        {
+                            files[0].CopyTo(fileStream);
+                        }
+                        productViewModel.Product.Image = fileName + extension;
+                    }
+                    productViewModel.Product.Image = productFromDb.Image;
+                    _db.Products.Add(productViewModel.Product);
                 }
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View();
-           
+            productViewModel.CategorySelectList = _db.Categories.Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString()
+            });
+            return View(productViewModel);
+
+        }
+
+        //GET -- DELETE
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }        
+            Product product = _db.Products.Include(x => x.Category).FirstOrDefault(x => x.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
+
+        //POST -- DELETE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeletePost(int? id)
+        {
+            var files = HttpContext.Request.Form.Files;
+            string webRootPath = _webHostEnvironment.WebRootPath;
+            var productFromDb = _db.Products.FirstOrDefault(x => x.Id == id);
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            if (files.Count > 0)
+            {
+                string upload = webRootPath + WC.ImagePath;
+                string fileName = Guid.NewGuid().ToString();
+                string extension = Path.GetExtension(files[0].FileName);
+
+                //Editing or Removing Old Image
+                var oldProductImage = Path.Combine(upload, productFromDb.Image);
+
+                if (System.IO.File.Exists(oldProductImage))
+                {
+                    System.IO.File.Delete(oldProductImage);
+                };
+            }
+            _db.Products.Remove(productFromDb);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }
