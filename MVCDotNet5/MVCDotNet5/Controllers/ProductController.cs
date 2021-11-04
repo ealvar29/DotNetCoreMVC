@@ -135,7 +135,7 @@ namespace MVCDotNet5.Controllers
         }
 
         //POST -- DELETE
-        [HttpPost]
+        [HttpPost,ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(int? id)
         {

@@ -1,55 +1,49 @@
-﻿@model MVCDotNet5.Models.ViewModels.ProductViewModel
+﻿@model MVCDotNet5.Models.Product
 
-@{ 
-    var title = "Delete Product";
-}
 
-<form method="post" enctype="multipart/form-data">
-    @if (Model.Product.Id != 0)
-    {
-        <input asp-for="Product.Id" hidden />
-    }
+<form method="post">
+   <input asp-for="Id" hidden />
     <div class="border p-3">
 
         <div class="form-group row">
-            <h2 class="text-info pl-3">@title</h2>
+            <h2 class="text-info pl-3">Delete Product</h2>
         </div>
         <div class="row">
             <div class="col-8">
                 <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="Product.Name"></label>
+                        <label asp-for="Name"></label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="Product.Name" class="form-control" disabled/>
+                        <input asp-for="Name" class="form-control" disabled/>
                     </div>
 
                 </div>
                 <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="Product.Price"></label>
+                        <label asp-for="Price"></label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="Product.Price" class="form-control" disabled/>
+                        <input asp-for="Price" class="form-control" disabled/>
                     </div>
 
                 </div>
 @*                <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="Product.ShortDesc"></label>
+                        <label asp-for="ShortDesc"></label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="Product.ShortDesc" class="form-control" />
-                        <span asp-validation-for="Product.ShortDesc" class="text-danger"></span>
+                        <input asp-for="ShortDesc" class="form-control" />
+                        <span asp-validation-for="ShortDesc" class="text-danger"></span>
                     </div>
 
                 </div>*@
                 <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="Product.Description"></label>
+                        <label asp-for="Description"></label>
                     </div>
                     <div class="col-8">
-                        <textarea disabled asp-for="Product.Description" class="form-control summernote"></textarea>
+                        <textarea disabled asp-for="Description" class="form-control summernote"></textarea>
                     </div>
 
                 </div>
@@ -62,39 +56,33 @@
                     </div>
 
                 </div>
-                <div class="form-group row">
+@*                <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="Product.CategoryId"></label>
+                        <label asp-for="CategoryId"></label>
                     </div>
                     <div class="col-8">
-                        <select disabled asp-for="Product.CategoryId" asp-items="@Model.CategorySelectList" class="form-control">
+                        <select disabled asp-for="CategoryId" asp-items="@Model.CategorySelectList" class="form-control">
                             <option selected>--Select Category--</option>
                         </select>
                     </div>
 
-                </div>
+                </div>*@
 @*                <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="Product.ApplicationTypeId"></label>
+                        <label asp-for="ApplicationTypeId"></label>
                     </div>
                     <div class="col-8">
-                        <select asp-for="Product.ApplicationTypeId" asp-items="@Model.ApplicationTypeSelectList" class="form-control">
+                        <select asp-for="ApplicationTypeId" asp-items="@Model.ApplicationTypeSelectList" class="form-control">
                             <option disabled selected>--Select Application Type--</option>
                         </select>
-                        <span asp-validation-for="Product.ApplicationTypeId" class="text-danger"></span>
+                        <span asp-validation-for="ApplicationTypeId" class="text-danger"></span>
                     </div>
 
                 </div>*@
                 <div class="form-group row">
                     <div class="col-8 offset-4 row">
-
                         <div class="col">
-                            @if (Model.Product.Id != 0)
-                            {
-                                //update
-                                <input type="submit" class="btn btn-info w-100" value="Delete" />
-                            }
-
+                             <button type="submit" class="btn btn-danger w-100">Delete</button>
                         </div>
                         <div class="col">
                             <a asp-action="Index" class="btn btn-success w-100"><i class="fas fa-sign-out-alt"></i> Back</a>
@@ -104,8 +92,8 @@
             </div>
             <div class="col-4 ">
                 @* Keep this empty *@
-                @if (Model.Product.Id != 0) { 
-                    <img src="@WC.ImagePath@Model.Product.Image" width="100%" style="border-radius:5px; border:1px solid #bbb" />
+                @if (Model.Id != 0) { 
+                    <img src="@WC.ImagePath@Model.Image" width="100%" style="border-radius:5px; border:1px solid #bbb" />
                          }
             </div>
         </div>
@@ -121,7 +109,8 @@
     <script>
         $(document).ready(function () {
             $('.summernote').summernote({
-                height:250
+                height:250,
+                disabled: true
             });
         });
         function validateInput() {
