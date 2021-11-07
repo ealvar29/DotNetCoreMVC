@@ -23,7 +23,12 @@ namespace MVCDotNet5.Controllers
         }
         public IActionResult Index()
         {
-            IEnumerable<Product> products = _db.Products.Include(x => x.Category);
+            IEnumerable<Product> products = _db.Products;
+            foreach(var obj in products)
+            {
+                obj.Category = _db.Categories.FirstOrDefault(u => u.Id == obj.CategoryId);
+                obj.ApplicationType = _db.ApplicationTypes.FirstOrDefault(u => u.Id == obj.ApplicationId);
+            };
             return View(products);
         }
         //GET -- UPSERT
@@ -32,6 +37,11 @@ namespace MVCDotNet5.Controllers
             ProductViewModel productViewModel = new ProductViewModel()
             {
                 Product = new Product(),
+                ApplicationTypeSelectList = _db.ApplicationTypes.Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                }),
                 CategorySelectList = _db.Categories.Select(x => new SelectListItem
                 {
                     Text = x.Name,
@@ -100,15 +110,25 @@ namespace MVCDotNet5.Controllers
                         {
                             files[0].CopyTo(fileStream);
                         }
+
                         productViewModel.Product.Image = fileName + extension;
                     }
-                    productViewModel.Product.Image = productFromDb.Image;
+                    else
+                    {
+                        productViewModel.Product.Image = productFromDb.Image;
+                    }
                     _db.Products.Add(productViewModel.Product);
                 }
+
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             productViewModel.CategorySelectList = _db.Categories.Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString()
+            });
+            productViewModel.ApplicationTypeSelectList = _db.ApplicationTypes.Select(x => new SelectListItem
             {
                 Text = x.Name,
                 Value = x.Id.ToString()
@@ -124,7 +144,7 @@ namespace MVCDotNet5.Controllers
             {
                 return NotFound();
             }        
-            Product product = _db.Products.Include(x => x.Category).FirstOrDefault(x => x.Id == id);
+            Product product = _db.Products.Include(x => x.Category).Include(x => x.ApplicationType).FirstOrDefault(x => x.Id == id);
 
             if (product == null)
             {
