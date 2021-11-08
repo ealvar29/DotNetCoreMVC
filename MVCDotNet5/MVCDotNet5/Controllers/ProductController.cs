@@ -23,12 +23,7 @@ namespace MVCDotNet5.Controllers
         }
         public IActionResult Index()
         {
-            IEnumerable<Product> products = _db.Products;
-            foreach(var obj in products)
-            {
-                obj.Category = _db.Categories.FirstOrDefault(u => u.Id == obj.CategoryId);
-                obj.ApplicationType = _db.ApplicationTypes.FirstOrDefault(u => u.Id == obj.ApplicationId);
-            };
+            IEnumerable<Product> products = _db.Products.Include(x => x.Category).Include(x => x.ApplicationType);
             return View(products);
         }
         //GET -- UPSERT
@@ -117,7 +112,7 @@ namespace MVCDotNet5.Controllers
                     {
                         productViewModel.Product.Image = productFromDb.Image;
                     }
-                    _db.Products.Add(productViewModel.Product);
+                    _db.Products.Update(productViewModel.Product);
                 }
 
                 _db.SaveChanges();
