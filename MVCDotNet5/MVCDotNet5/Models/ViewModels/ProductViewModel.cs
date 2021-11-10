@@ -3,12 +3,11 @@ using System.Collections.Generic;
 
 namespace MVCDotNet5.Models.ViewModels
 {
-    public class ProductViewModel
+    public class HomeViewModel
     {
-        public Product Product { get; set; }
+        public IEnumerable<Product> Products { get; set; }
 
-        public IEnumerable<SelectListItem> CategorySelectList {  get; set; }
+        public IEnumerable<Category> Categories { get; set; }
 
-        public IEnumerable<SelectListItem> ApplicationTypeSelectList { get; set; }
     }
 }
