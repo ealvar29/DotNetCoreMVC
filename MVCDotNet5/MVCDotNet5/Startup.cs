@@ -29,6 +29,13 @@ namespace MVCDotNet5
             options.UseNpgsql(
                 Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllersWithViews();
+            services.AddHttpContextAccessor();
+            services.AddSession(Options =>
+            {
+                Options.IdleTimeout = TimeSpan.FromMinutes(10);
+                Options.Cookie.HttpOnly = true;
+                Options.Cookie.IsEssential = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,6 +64,8 @@ namespace MVCDotNet5
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseSession();
         }
     }
 }

@@ -38,6 +38,17 @@ namespace MVCDotNet5.Controllers
             return View();
         }
 
+        public IActionResult Details(int id)
+        {
+            DetailsViewModal detailsViewModal = new DetailsViewModal()
+            {
+                Product = _db.Products.Include(x => x.Category).Include(x => x.ApplicationType)
+                .Where(x => x.Id == id).FirstOrDefault(),
+                ExistsInCart = false
+            };
+            return View(detailsViewModal);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

@@ -12,10 +12,10 @@
     </div>
     <br />
     <div class="row">
-        @foreach (var prod in Model.Products)
+        @foreach (var product in Model.Products)
         {
             //display all product
-            <partial name="_IndividualProductCard" model="prod" />
+            <partial name="_IndividualProductCard" model="product" />
         }
     </div>
 </div>
